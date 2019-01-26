@@ -26,6 +26,9 @@ public class CollectibleScript : MonoBehaviour
 
     ItemType type;
 
+    //  Timing
+    bool growing = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,10 +39,23 @@ public class CollectibleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.localScale.x < scale.x && transform.localScale.y < scale.y){
+        if (transform.localScale.x < scale.x && transform.localScale.y < scale.y && growing == true)
+        {
             transform.localScale = Vector3.Lerp(transform.localScale, scale, Time.deltaTime);
         }
-        transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime);
+        
+        transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * 2);
+
+        if (Vector3.Magnitude(scale - transform.localScale) < 0.1 || growing == false)
+        {
+            growing = false;
+            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.zero, Time.deltaTime);
+        }
+
+        if (Vector3.Magnitude(transform.localScale) < 0.1 && growing == false)
+        {
+            DestroyObject(gameObject);
+        }
     }
 
     void OnMouseDrag()

@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class GameScript : MonoBehaviour
 {
-    public Sprite[] sprites;
+    public Object[] sprites;
+    public GameObject prefab;
 
     // Start is called before the first frame update
     void Start()
     {
-        //sprites = Items.LoadAll();
+        sprites = Resources.LoadAll("Items", typeof(Sprite));
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 }
