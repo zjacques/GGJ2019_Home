@@ -16,6 +16,7 @@ public class HeartScript : MonoBehaviour
         collected.Add("People", 0);
         collected.Add("Science", 0);
         collected.Add("Shelter", 0);
+        collected.Add("Fun", 0);
     }
 
     // Update is called once per frame
