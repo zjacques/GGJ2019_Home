@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Heart : MonoBehaviour
+public class HeartScript : MonoBehaviour
 {
-    public Dictionary<string, int> collected;
+    public Dictionary<string, int> collected = new Dictionary<string, int>();
 
     // Start is called before the first frame update
     void Start()

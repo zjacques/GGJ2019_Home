@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Handles the dragging of the collectible objects.
 /// </summary>
-public class Collectible : MonoBehaviour
+public class CollectibleScript : MonoBehaviour
 {
     //  Initialise class variables
     private Vector3 newPosition;
@@ -55,39 +55,39 @@ public class Collectible : MonoBehaviour
     /// <param name="other">The other Collider2D involved in this collision.</param>
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "heart")
+        if (other.tag == "Heart")
         {
+            HeartScript otherParent = other.transform.gameObject.GetComponent<HeartScript>();
 
-        }
-        Heart otherParent = other.transform.gameObject.GetComponent<Heart>();
-        switch (type)
-        {
-            case ItemType.Art:
-                otherParent.collected["Art"] += 1;
-                break;
-            case ItemType.Food:
-                otherParent.collected["Food"] += 1;
-                break;
-            case ItemType.Music:
-                otherParent.collected["Music"] += 1;
-                break;
-            case ItemType.Nature:
-                otherParent.collected["Nature"] += 1;
-                break;
-            case ItemType.People:
-                otherParent.collected["People"] += 1;
-                break;
-            case ItemType.Science:
-                otherParent.collected["Science"] += 1;
-                break;
-            case ItemType.Shelter:
-                otherParent.collected["Shelter"] += 1;
-                break;
-            default:
+            switch (type)
+            {
+                case ItemType.Art:
+                    otherParent.collected["Art"] += 1;
+                    break;
+                case ItemType.Food:
+                    otherParent.collected["Food"] += 1;
+                    break;
+                case ItemType.Music:
+                    otherParent.collected["Music"] += 1;
+                    break;
+                case ItemType.Nature:
+                    otherParent.collected["Nature"] += 1;
+                    break;
+                case ItemType.People:
+                    otherParent.collected["People"] += 1;
+                    break;
+                case ItemType.Science:
+                    otherParent.collected["Science"] += 1;
+                    break;
+                case ItemType.Shelter:
+                    otherParent.collected["Shelter"] += 1;
+                    break;
+                default:
 
-                break;
-        }        
+                    break;
+            }  
 
-        Destroy(gameObject);
+            DestroyObject(gameObject);      
+        }                
     }
 }
