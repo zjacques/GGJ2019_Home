@@ -15,7 +15,9 @@ public class GameScript : MonoBehaviour
     //  Timer variables.
     public Text timerText;
     public float gameTime = 60;
-    public bool gameStarted = true;
+    private bool gameStarted = false;
+
+    public HeartScript heart;
 
     // Start is called before the first frame update
     void Start()
@@ -61,14 +63,18 @@ public class GameScript : MonoBehaviour
         }
     }
 
-    void StartGame(){
-        gameStarted = false;
-        gameTime = 60;
-        timerText.text = "60";
+    public void StartGame(){
+        if(gameStarted == false)
+        {
+            gameTime = 60;
+            timerText.text = "60";
+            gameStarted = true;
+        }
     }
 
     void EndGame(){
         //show scoreboard stuff
         timerText.text = "";
+        heart.FadeOut();
     }
 }

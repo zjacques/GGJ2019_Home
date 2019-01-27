@@ -64,7 +64,7 @@ public class CollectibleScript : MonoBehaviour
     }
 
     private void OnMouseUp() {
-        beingDragged = false;    
+        beingDragged = false;
     }
 
     /// <summary>
