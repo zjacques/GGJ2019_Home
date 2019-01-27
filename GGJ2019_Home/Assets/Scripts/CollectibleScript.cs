@@ -12,19 +12,9 @@ public class CollectibleScript : MonoBehaviour
     public float timeToLive;
     public Vector3 scale;
     private SpriteRenderer spriteR;  
+    private bool beingDragged = false;
 
-    public enum ItemType
-    {
-        Art,
-        Food,
-        Music,
-        Nature,
-        People,
-        Science,
-        Shelter
-    }  
-
-    ItemType type;
+    private GameObject gameScriptObject;
 
     //  Timing
     bool growing = true;
@@ -34,34 +24,47 @@ public class CollectibleScript : MonoBehaviour
     {
         newPosition = transform.position;
         transform.localScale = new Vector3(0, 0, 0);
+        gameScriptObject = GameObject.Find("GameScript");
     }
 
     // Update is called once per frame
     void Update()
     {
+        //  Make the collectible grow.
         if (transform.localScale.x < scale.x && transform.localScale.y < scale.y && growing == true)
         {
             transform.localScale = Vector3.Lerp(transform.localScale, scale, Time.deltaTime);
         }
         
+        //  Update the collectibles position so it continues to lerp.
         transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * 2);
 
-        if (Vector3.Magnitude(scale - transform.localScale) < 0.1 || growing == false)
+        //  Shrink the collectible after it reaches max size. It stops shrinking if it is being dragged.  
+        if ((Vector3.Magnitude(scale - transform.localScale) < 0.1 || growing == false) && !beingDragged)
         {
             growing = false;
             transform.localScale = Vector3.Lerp(transform.localScale, Vector3.zero, Time.deltaTime);
         }
 
+        //  Delete the collectible after it shrinks.
         if (Vector3.Magnitude(transform.localScale) < 0.1 && growing == false)
         {
-            DestroyObject(gameObject);
+            Destroy(gameObject);
         }
     }
 
     void OnMouseDrag()
     {
+        if (!beingDragged)
+        {
+            beingDragged = true;
+        }
         Vector3 mousePosition = Input.mousePosition;
         newPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 10));                
+    }
+
+    private void OnMouseUp() {
+        beingDragged = false;    
     }
 
     /// <summary>
@@ -73,37 +76,22 @@ public class CollectibleScript : MonoBehaviour
     {
         if (other.tag == "Heart")
         {
-            HeartScript otherParent = other.transform.gameObject.GetComponent<HeartScript>();
+            //  Get access to the dict of collected objects.
+            GameScript gameScript = gameScriptObject.transform.gameObject.GetComponent<GameScript>();
+            //  Get the name of the sprite so we know exactly what we collected.
+            string spriteName = gameObject.GetComponent<SpriteRenderer>().sprite.name;
 
-            switch (type)
+            //  Add the type of the collectible to the hearts storage dict here.
+            if (!gameScript.collected.ContainsKey(spriteName))
             {
-                case ItemType.Art:
-                    otherParent.collected["Art"] += 1;
-                    break;
-                case ItemType.Food:
-                    otherParent.collected["Food"] += 1;
-                    break;
-                case ItemType.Music:
-                    otherParent.collected["Music"] += 1;
-                    break;
-                case ItemType.Nature:
-                    otherParent.collected["Nature"] += 1;
-                    break;
-                case ItemType.People:
-                    otherParent.collected["People"] += 1;
-                    break;
-                case ItemType.Science:
-                    otherParent.collected["Science"] += 1;
-                    break;
-                case ItemType.Shelter:
-                    otherParent.collected["Shelter"] += 1;
-                    break;
-                default:
-
-                    break;
-            }  
-
-            DestroyObject(gameObject);      
+                gameScript.collected[spriteName] = 1;
+            }
+            else
+            {
+                gameScript.collected[spriteName] += 1;
+            }            
+            //  Destroy the collectible.
+            Destroy(gameObject);      
         }                
     }
 }
