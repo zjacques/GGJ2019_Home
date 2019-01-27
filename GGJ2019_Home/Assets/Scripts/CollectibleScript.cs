@@ -15,12 +15,13 @@ public class CollectibleScript : MonoBehaviour
     private bool beingDragged = false;
 
     private GameObject gameScriptObject;
-    private bool gameOver = false;
+    private AudioSource ping;
 
     //  Timing
     private bool growing = true;
     
     private bool spawnSafe = false; 
+    private bool gameOver;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +35,7 @@ public class CollectibleScript : MonoBehaviour
         transform.localScale = new Vector3(0, 0, 0);
         gameScriptObject = GameObject.Find("GameScript");
         gameOver = gameScriptObject.GetComponent<GameScript>().gameOver;        
+        ping = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -76,7 +78,7 @@ public class CollectibleScript : MonoBehaviour
     }
 
     private void OnMouseUp() {
-        beingDragged = false;    
+        beingDragged = false;
     }
 
     /// <summary>
@@ -90,6 +92,7 @@ public class CollectibleScript : MonoBehaviour
         {
             if (spawnSafe)
             {
+                ping.Play();
                 //  Get access to the dict of collected objects.
                 GameScript gameScript = gameScriptObject.transform.gameObject.GetComponent<GameScript>();
                 //  Get the name of the sprite so we know exactly what we collected.
@@ -104,8 +107,9 @@ public class CollectibleScript : MonoBehaviour
                 {
                     gameScript.collected[spriteName] += 1;
                 }            
+                gameObject.GetComponent<SpriteRenderer>().enabled = false;
                 //  Destroy the collectible.
-                Destroy(gameObject);     
+                Destroy(gameObject, 0.3f);     
             } 
         }                
     }

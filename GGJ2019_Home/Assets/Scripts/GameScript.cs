@@ -16,8 +16,20 @@ public class GameScript : MonoBehaviour
     //  Timer variables.
     public Text timerText;
     public float gameTime = 60;
-    public bool gameStarted = true;
+    private bool gameStarted = false;
     public bool gameOver = false;
+    public HeartScript heart;
+    #region audio
+    public AudioSource introMusic;
+    public AudioClip intro;
+    public AudioClip end;
+    private float audioStartTime;
+    private bool audioFading = false;
+    private float audioDuration = 1.0f;
+    private float minVol = 0f;
+    private float maxVol = 1f;
+
+    #endregion
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +40,16 @@ public class GameScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(audioFading)
+        {
+            float t = (Time.time - audioStartTime) / audioDuration;  
+            if(t>=1)
+            {
+                audioFading = false;
+            }
+            introMusic.volume = Mathf.SmoothStep(minVol, maxVol, t); 
+        } 
+
         if(gameStarted)
         {
             //  Spawns a new instance whenever the time in spawnTimer is greater then spawnDelay.
@@ -66,11 +88,14 @@ public class GameScript : MonoBehaviour
         }
     }
 
-    void StartGame()
-    {
-        gameStarted = false;
-        gameTime = 60;
-        timerText.text = "60";
+    public void StartGame(){
+        if(gameStarted == false)
+        {
+            AudioFadeOut();
+            gameTime = 60;
+            timerText.text = "60";
+            gameStarted = true;
+        }
     }
 
     void EndGame()
@@ -91,16 +116,13 @@ public class GameScript : MonoBehaviour
                 SpriteRenderer spriteR = collectible.GetComponent<SpriteRenderer>();
                 //  Set the sprite.
                 spriteR.sprite = (Sprite)sprites[spriteIndex];
-                collectible.transform.position = new Vector2(spawnPoint.x * spriteR.bounds.size.x, spawnPoint.y * spriteR.bounds.size.y);
-                
-                spawnPoint.x++;  
-                if (spawnPoint.x * spriteR.bounds.size.x > Screen.width)
-                {
-                    spawnPoint.x = 1;
-                    spawnPoint.y++;
-                } 
             }                     
         }
+
+        heart.FadeOut();
+        heart.AudioFadeOut();
+        introMusic.clip = end;
+        AudioFadeIn();
     }
 
     //  Finds the key of the key in the sprite array.
@@ -117,5 +139,22 @@ public class GameScript : MonoBehaviour
             i++;
         }
         return index;
+        
     }
+#region audioFunctions
+    public void AudioFadeOut(){
+        audioStartTime = Time.time;
+        audioFading = true;
+        minVol = 1f;
+        maxVol = 0f;
+    }
+
+    public void AudioFadeIn(){
+        introMusic.Play();
+        audioStartTime = Time.time;
+        audioFading = true;
+        minVol = 0f;
+        maxVol = 1f;
+    }
+#endregion
 }
