@@ -10,12 +10,14 @@ public class GameScript : MonoBehaviour
     private Object[] sprites;
     private float spawnTimer = 0.0f;
     public float spawnDelay;
+    private float amountToSpawn;
     public Dictionary<string, int> collected = new Dictionary<string, int>();
 
     //  Timer variables.
     public Text timerText;
     public float gameTime = 60;
     public bool gameStarted = true;
+    public bool gameOver = false;
 
     // Start is called before the first frame update
     void Start()
@@ -33,15 +35,18 @@ public class GameScript : MonoBehaviour
             spawnTimer += Time.deltaTime;
             if (spawnTimer > spawnDelay)
             {
-                //  Instantiate new objects.
-                float spawnPointX = Random.Range(Camera.main.ScreenToWorldPoint(Vector3.zero).x, Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0)).x);
-                float spawnPointY = Random.Range(Camera.main.ScreenToWorldPoint(Vector3.zero).y, Camera.main.ScreenToWorldPoint(new Vector2(0, Screen.height)).y);
-                //  Save a copy of the instatiated object so we can modify it.
-                GameObject collectible = Instantiate(prefab, new Vector2(spawnPointX, spawnPointY), Quaternion.identity) as GameObject;
-                //  Get the sprite renderer.
-                SpriteRenderer spriteR = collectible.GetComponent<SpriteRenderer>();
-                //  Set the sprite.
-                spriteR.sprite = (Sprite)sprites[Random.Range(0, sprites.Length)];
+                amountToSpawn = ((gameTime % 6) + 1) * 2;
+
+                for (int i = 0; i < amountToSpawn; i++)
+                {
+                    //  Instantiate new objects.
+                    //  Save a copy of the instatiated object so we can modify it.
+                    GameObject collectible = Instantiate(prefab, Vector2.zero, Quaternion.identity) as GameObject;
+                    //  Get the sprite renderer.
+                    SpriteRenderer spriteR = collectible.GetComponent<SpriteRenderer>();
+                    //  Set the sprite.
+                    spriteR.sprite = (Sprite)sprites[Random.Range(0, sprites.Length)];
+                }                
                 //  Reset the timer for spawning.
                 spawnTimer = 0;
             }
@@ -61,14 +66,56 @@ public class GameScript : MonoBehaviour
         }
     }
 
-    void StartGame(){
+    void StartGame()
+    {
         gameStarted = false;
         gameTime = 60;
         timerText.text = "60";
     }
 
-    void EndGame(){
-        //show scoreboard stuff
+    void EndGame()
+    {
+        gameOver = true;
+        // Show scoreboard stuff
         timerText.text = "";
+        Vector2 spawnPoint = new Vector2(1, 1);
+        foreach (string key in collected.Keys)
+        {            
+            int spriteIndex = IndexOf(key);
+            for (int i = 0; i < collected[key]; i++)
+            {
+                //  Instantiate new objects.
+                //  Save a copy of the instatiated object so we can modify it.
+                GameObject collectible = Instantiate(prefab, Vector2.zero, Quaternion.identity) as GameObject;
+                //  Get the sprite renderer.
+                SpriteRenderer spriteR = collectible.GetComponent<SpriteRenderer>();
+                //  Set the sprite.
+                spriteR.sprite = (Sprite)sprites[spriteIndex];
+                collectible.transform.position = new Vector2(spawnPoint.x * spriteR.bounds.size.x, spawnPoint.y * spriteR.bounds.size.y);
+                
+                spawnPoint.x++;  
+                if (spawnPoint.x * spriteR.bounds.size.x > Screen.width)
+                {
+                    spawnPoint.x = 1;
+                    spawnPoint.y++;
+                } 
+            }                     
+        }
+    }
+
+    //  Finds the key of the key in the sprite array.
+    int IndexOf(string key)
+    {
+        int index = -1;
+        int i = 0;
+        while (i < sprites.Length && index == -1)
+        {
+            if (sprites[i].name == key)
+            {
+                index = i;                
+            }
+            i++;
+        }
+        return index;
     }
 }

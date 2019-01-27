@@ -549,6 +549,7 @@ MonoBehaviour:
   timerText: {fileID: 1308692751}
   gameTime: 60
   gameStarted: 1
+  gameOver: 0
 --- !u!4 &1682870046
 Transform:
   m_ObjectHideFlags: 0
