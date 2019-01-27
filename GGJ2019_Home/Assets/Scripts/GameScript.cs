@@ -18,6 +18,17 @@ public class GameScript : MonoBehaviour
     private bool gameStarted = false;
 
     public HeartScript heart;
+    #region audio
+    public AudioSource introMusic;
+    public AudioClip intro;
+    public AudioClip end;
+    private float audioStartTime;
+    private bool audioFading = false;
+    private float audioDuration = 1.0f;
+    private float minVol = 0f;
+    private float maxVol = 1f;
+
+    #endregion
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +39,16 @@ public class GameScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(audioFading)
+        {
+            float t = (Time.time - audioStartTime) / audioDuration;  
+            if(t>=1)
+            {
+                audioFading = false;
+            }
+            introMusic.volume = Mathf.SmoothStep(minVol, maxVol, t); 
+        } 
+
         if(gameStarted)
         {
             //  Spawns a new instance whenever the time in spawnTimer is greater then spawnDelay.
@@ -66,6 +87,7 @@ public class GameScript : MonoBehaviour
     public void StartGame(){
         if(gameStarted == false)
         {
+            AudioFadeOut();
             gameTime = 60;
             timerText.text = "60";
             gameStarted = true;
@@ -76,5 +98,24 @@ public class GameScript : MonoBehaviour
         //show scoreboard stuff
         timerText.text = "";
         heart.FadeOut();
+        heart.AudioFadeOut();
+        introMusic.clip = end;
+        AudioFadeIn();
     }
+#region audioFunctions
+    public void AudioFadeOut(){
+        audioStartTime = Time.time;
+        audioFading = true;
+        minVol = 1f;
+        maxVol = 0f;
+    }
+
+    public void AudioFadeIn(){
+        introMusic.Play();
+        audioStartTime = Time.time;
+        audioFading = true;
+        minVol = 0f;
+        maxVol = 1f;
+    }
+#endregion
 }
