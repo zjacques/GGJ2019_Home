@@ -668,7 +668,6 @@ MonoBehaviour:
   spawnDelay: 1
   timerText: {fileID: 1308692751}
   gameTime: 60
-  gameStarted: 1
   gameOver: 0
   heart: {fileID: 1525795691}
   introMusic: {fileID: 1682870047}

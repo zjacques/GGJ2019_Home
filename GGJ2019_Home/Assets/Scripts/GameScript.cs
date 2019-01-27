@@ -28,6 +28,9 @@ public class GameScript : MonoBehaviour
     private float audioDuration = 1.0f;
     private float minVol = 0f;
     private float maxVol = 1f;
+    private float endFadeTimer = 0;
+    private bool endCalled = false;
+    private bool callEnd = false;
 
     #endregion
 
@@ -79,12 +82,19 @@ public class GameScript : MonoBehaviour
             {
                 gameTime = 0;
                 gameStarted = false;
+                callEnd = true;
             }
-            timerText.text = Mathf.Floor(gameTime).ToString();
-            if(gameStarted == false)
+            timerText.text = Mathf.Floor(gameTime).ToString();            
+        }
+
+        if(gameStarted == false && callEnd == true && endCalled == false)
+        {
+            endFadeTimer += Time.deltaTime;
+            if (endFadeTimer >= 3)
             {
                 EndGame();
-            }
+                endCalled = true;
+            }                
         }
     }
 
@@ -100,7 +110,7 @@ public class GameScript : MonoBehaviour
 
     void EndGame()
     {
-        gameOver = true;
+        gameOver = true;      
         // Show scoreboard stuff
         timerText.text = "";
         Vector2 spawnPoint = new Vector2(1, 1);
